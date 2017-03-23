@@ -1,4 +1,7 @@
-# PIPRS
+# PIPRS (Pull-based Interledger Payment Request Server)
+> IPR-based pull payment server for five-bells-ledger
+
+It's pronounced "Pipers."
 
 ## Usage
 
@@ -10,6 +13,8 @@ PIPRS_STORE=store.db PIPRS_PORT=6666 npm start
 ```
 
 ## API
+
+Requests and responses are in JSON.
 
 ### POST `/users`
 
