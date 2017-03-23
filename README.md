@@ -1,7 +1,9 @@
 # PIPRS (Pull-based Interledger Payment Request Server)
 > IPR-based pull payment server for five-bells-ledger
 
-It's pronounced "Pipers."
+It's pronounced "Pipers." This is not safe for production use cases. It does
+some bad things, like storing passwords in plaintext and doing expensive
+database and crypto operations on unauthenticated requests.
 
 ## Usage
 
