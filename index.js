@@ -9,6 +9,9 @@ const PluginBells = require('ilp-plugin-bells')
 
 const PORT = process.env.PIPRS_PORT || 6666
 const STORE = process.env.PIPRS_STORE || ':memory:'
+const CREATE_QUERY = 'CREATE TABLE IF NOT EXISTS user (key TEXT, account TEXT, password TEXT)'
+const CREATE_USER_QUERY = 'INSERT INTO user VALUES (?, ?, ?)'
+const GET_USER_QUERY = 'SELECT * FROM user WHERE key = ?'
 
 const app = require('koa')()
 const router = require('koa-router')()
@@ -39,8 +42,7 @@ router.post('/users', function * () {
 
   try {
     yield plugin.connect()
-    yield database.run('INSERT INTO user VALUES (?, ?, ?)',
-      key, account, password)
+    yield database.run(CREATE_USER_QUERY, key, account, password)
   } catch (e) {
     this.status = 422
     this.body = {
@@ -80,7 +82,7 @@ router.post('/payments', function * () {
   const condition = ipr.slice(1, 33) // bytes between version and packet are condition
   const packet = ipr.slice(33) // get everything after the condition
 
-  const user = yield database.get('SELECT * FROM user WHERE key = ?', key)
+  const user = yield database.get(GET_USER_QUERY, key)
   if (!user) {
     this.status = 422
     this.body = {
@@ -149,7 +151,7 @@ router.post('/payments', function * () {
 database
   .open(STORE, { Promise })
   .then(() => {
-    return database.run('CREATE TABLE user (key TEXT, account TEXT, password TEXT)')
+    return database.run(CREATE_QUERY)
   })
   .then(() => {
     app
