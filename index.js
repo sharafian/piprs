@@ -66,6 +66,20 @@ router.post('/payments', function * () {
     return
   }
 
+  const version = ipr.slice(0, 1) // get the version number
+  if (version.toString('hex') !== '02') {
+    this.status = 422
+    this.body = {
+      status: 'error',
+      message: 'invalid IPR version'
+    }
+    console.log('request with invalid IPR packet', ipr.toString('hex'))
+    return
+  }
+
+  const condition = ipr.slice(1, 33) // bytes between version and packet are condition
+  const packet = ipr.slice(33) // get everything after the condition
+
   const user = yield database.get('SELECT * FROM user WHERE key = ?', key)
   if (!user) {
     this.status = 422
@@ -116,7 +130,6 @@ router.post('/payments', function * () {
     .update(message)
     .digest())
 
-  const packet = ipr.slice(32) // get everything after the condition
   const quote = yield ILP.ILQP.quoteByPacket(plugin, packet)
 
   // sends out the payment but doesn't wait for it to be fulfilled
