@@ -56,12 +56,12 @@ router.post('/users', function * () {
 })
 
 router.post('/payments', function * () {
-  const { signature, key, packet, condition } = this.request.body
-  if (!signature || !key || !packet || !condition) {
+  const { signature, key, ipr } = this.request.body
+  if (!signature || !key || !ipr) {
     this.status = 422
     this.body = {
       status: 'error',
-      message: 'all of signature, key, packet, and condition must be specified'
+      message: 'all of signature, key, and ipr must be specified'
     }
     return
   }
@@ -79,10 +79,7 @@ router.post('/payments', function * () {
 
   const keyBuffer = Buffer.from(key, 'base64')
   const sigBuffer = Buffer.from(signature, 'base64')
-  const message = Buffer.concat([
-    Buffer.from(condition, 'base64'),
-    Buffer.from(packet, 'base64'),
-  ])
+  const message = Buffer.from(ipr, 'base64')
 
   let verified
   try {
@@ -119,6 +116,7 @@ router.post('/payments', function * () {
     .update(message)
     .digest())
 
+  const packet = ipr.slice(32) // get everything after the condition
   const quote = yield ILP.ILQP.quoteByPacket(plugin, packet)
 
   // sends out the payment but doesn't wait for it to be fulfilled

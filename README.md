@@ -22,7 +22,7 @@ Requests and responses are in JSON.
 
 Creates a user in the database. The `account` and `password` are used to authenticate
 a plugin-bells instance when a payment is sent. Payments will be sent if an IPR signed
-with `key` is presented. Signatures are of the octet string `condition + packet`.
+with `key` is presented. Signatures are of an [IPR](https://github.com/interledger/rfcs/blob/master/0011-interledger-payment-request/0011-interledger-payment-request.md).
 
 #### Request
 
@@ -38,14 +38,13 @@ with `key` is presented. Signatures are of the octet string `condition + packet`
 ### POST `/payments`
 
 Creates an IPR payment from the user who owns the given key to the destination specified.
-Uses `packet` and `condition` as the IPR.
+Uses the `ipr` to quote and send a payment.
 
 #### Request
 
 - `key` - Public key of user. Returns `422` if no user with this key exists.
-- `packet` - base64url-encoded ILP packet.
-- `condition` - base64url-encoded 32-byte ILP condition.
-- `signature` - signature of the octet string `condition + packet`. Verified with `key`.
+- `ipr` - base64url-encoded IPR.
+- `signature` - signature of IPR. Verified with `key`.
 
 #### Response
 
