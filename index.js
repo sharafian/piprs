@@ -9,7 +9,7 @@ const PluginBells = require('ilp-plugin-bells')
 
 const PORT = process.env.PIPRS_PORT || 6666
 const STORE = process.env.PIPRS_STORE || ':memory:'
-const CREATE_QUERY = 'CREATE TABLE IF NOT EXISTS user (key TEXT, account TEXT, password TEXT)'
+const CREATE_QUERY = 'CREATE TABLE IF NOT EXISTS user (key TEXT PRIMARY KEY, account TEXT, password TEXT)'
 const CREATE_USER_QUERY = 'INSERT INTO user VALUES (?, ?, ?)'
 const GET_USER_QUERY = 'SELECT * FROM user WHERE key = ?'
 
