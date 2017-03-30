@@ -97,6 +97,8 @@ router.post('/payments', function * () {
   const sigBuffer = Buffer.from(signature, 'base64')
   const message = Buffer.from(ipr, 'base64')
 
+  // don't verify for now, for testing purposes
+  /*
   let verified
   try {
     verified = nacl.sign.detached.verify(message, sigBuffer, keyBuffer)
@@ -119,6 +121,7 @@ router.post('/payments', function * () {
     console.log('request with bad signature', signature)
     return
   }
+  */
   
   const plugin = new PluginBells({
     account: user.account,
