@@ -68,19 +68,20 @@ router.post('/payments', function * () {
     return
   }
 
-  const version = ipr.slice(0, 1) // get the version number
+  const iprBuffer = Buffer.from(ipr, 'base64')
+  const version = iprBuffer.slice(0, 1) // get the version number
   if (version.toString('hex') !== '02') {
     this.status = 422
     this.body = {
       status: 'error',
       message: 'invalid IPR version'
     }
-    console.log('request with invalid IPR packet', ipr.toString('hex'))
+    console.log('request with invalid IPR packet', iprBuffer.toString('hex'))
     return
   }
 
-  const condition = ipr.slice(1, 33) // bytes between version and packet are condition
-  const packet = ipr.slice(33) // get everything after the condition
+  const condition = iprBuffer.slice(1, 33) // bytes between version and packet are condition
+  const packet = iprBuffer.slice(33) // get everything after the condition
 
   const user = yield database.get(GET_USER_QUERY, key)
   if (!user) {
@@ -95,7 +96,6 @@ router.post('/payments', function * () {
 
   const keyBuffer = Buffer.from(key, 'base64')
   const sigBuffer = Buffer.from(signature, 'base64')
-  const message = Buffer.from(ipr, 'base64')
 
   // don't verify for now, for testing purposes
   /*
@@ -132,7 +132,7 @@ router.post('/payments', function * () {
   // could be updated to use an HMAC to prevent id squatting.
   const id = toUUID(crypto
     .createHash('sha256')
-    .update(message)
+    .update(iprBuffer)
     .digest())
 
   const quote = yield ILP.ILQP.quoteByPacket(plugin, packet)
