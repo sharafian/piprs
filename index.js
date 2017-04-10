@@ -96,10 +96,15 @@ router.post('/payments', function * () {
 
   const keyBuffer = Buffer.from(key, 'base64')
   const sigBuffer = Buffer.from(signature, 'base64')
+  const message = crypto
+    .createHash('sha256')
+    .update(iprBuffer)
+    .digest()
+    .slice(0, 16)
 
   let verified
   try {
-    verified = nacl.sign.detached.verify(iprBuffer.slice(0, 16), sigBuffer, keyBuffer)
+    verified = nacl.sign.detached.verify(message, sigBuffer, keyBuffer)
   } catch (e) {
     this.status = 422
     this.body = {
