@@ -44,7 +44,7 @@ Uses the `ipr` to quote and send a payment.
 
 - `key` - Public key of user. Returns `422` if no user with this key exists.
 - `ipr` - base64url-encoded IPR.
-- `signature` - signature of IPR. Verified with `key`.
+- `signature` - signature of the first 16 bytes of IPR. Verified with `key`.
 
 #### Response
 
